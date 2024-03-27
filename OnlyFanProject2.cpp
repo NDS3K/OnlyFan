@@ -45,21 +45,21 @@ void loop()
     // Câu điều kiện logic nếu distance <= 30 thì khởi động động cơ
     if(distance <= 30)
     {
-      digitalWrite(motor_pin1,HIGH); 
-      digitalWrite(motor_pin2,LOW);
-      analogWrite(ena,255);
+      digitalWrite(motor_pin1,HIGH); // cho cực dương của động cơ là HIGH
+      digitalWrite(motor_pin2,LOW);//cực âm là LOW 
+      analogWrite(ena,255);// => xoay xuôi chiều với công suất 100%
     }
     // Câu điều kiện logic nếu distance > 30 thì dừng động cơ 
     else if(distance > 30)
     {
         digitalWrite(motor_pin1,HIGH);
-        digitalWrite(motor_pin2,LOW);
-        analogWrite(ena,0);
+        digitalWrite(motor_pin2,LOW); 
+        analogWrite(ena,0); // Dừng động cơ
     }
     
 
-    Serial.print(distance);// in ra giá trị khoảng cách 
-    Serial.println("cm");
+    Serial.println(distance+"cm");// in ra giá trị khoảng cách 
+    
    
     
     
