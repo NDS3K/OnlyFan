@@ -1,65 +1,76 @@
 #include <Arduino.h>
-// Define chân 
-
-#define motor_pin1 7 // Chân điều khiển cực dương của động cơ
-#define motor_pin2 8 // Chân điều khiển cực âm của động cơ
-#define ena 9 // Nhận giá trị analog với 255 thì công suất = 100 %, với 0 thì = 0 %
-#define trig 10 // chân phát ra sóng âm
-#define echo 11 // chân nhận sóng âm
-
-int distance; // biến lưu khoảng cách
-
-long runtime; // biến lưu thời gian nhận tín hiệu từ cảm biến
+ 
+#define ir_pin 6
+#define motor_pin1 7 
+#define motor_pin2 8 
+#define ena 9 
+#define trig 10 
+#define echo 11 
+int distance; 
+long duration;
+long runtime; 
 
 void setup()
 {   
-    // Setup các chế độ của pin
-    // Do chỉ có echo là nhận thông tin từ bên ngoài nên set input
+    Serial.begin(9600);
+    
     pinMode(motor_pin1,OUTPUT);
     pinMode(motor_pin2,OUTPUT);
     pinMode(ena,OUTPUT);
     pinMode(trig,OUTPUT);
     pinMode(echo,INPUT);
+    digitalWrite(echo,HIGH);
+    pinMode(ir_pin,INPUT);
+    
 }    
 
 
 void loop()
 {
-
-    Serial.begin(9600); //Khởi tạo Serial để đọc thông tin từ cảm biến 
-
-    // trig tạo ra sóng âm 
+    
     digitalWrite(trig,LOW); 
-    delayMicroseconds(2);
-    digitalWrite(trig,HIGH); 
+    delayMicroseconds(5);
+    digitalWrite(trig,HIGH);
     delayMicroseconds(5);
     digitalWrite(trig,LOW);
 
     
+    runtime = pulseIn(ir_pin,LOW);
+
+    distance = int(runtime/2/29.412);
+
     
-
-    runtime = pulseIn(echo,HIGH); //Thời gian echo nhận lại sóng âm
-
-    distance = int(runtime/2/29.412); //Công thức tính sóng âm (datasheet)
-
-    // Câu điều kiện logic nếu distance <= 30 thì khởi động động cơ
-    if(distance <= 30)
+    /*if( distance > 0 && distance <= 30)
     {
-      digitalWrite(motor_pin1,HIGH); // cho cực dương của động cơ là HIGH
-      digitalWrite(motor_pin2,LOW);//cực âm là LOW 
-      analogWrite(ena,255);// => xoay xuôi chiều với công suất 100%
+      digitalWrite(motor_pin1,LOW); 
+      digitalWrite(motor_pin2,HIGH);
+      analogWrite(ena,255);
     }
-    // Câu điều kiện logic nếu distance > 30 thì dừng động cơ 
     else if(distance > 30)
     {
-        digitalWrite(motor_pin1,HIGH);
-        digitalWrite(motor_pin2,LOW); 
-        analogWrite(ena,0); // Dừng động cơ
-    }
+        digitalWrite(motor_pin1,LOW);
+        digitalWrite(motor_pin2,HIGH);
+        analogWrite(ena,0);
+    }*/
+    
     
 
-    Serial.println(distance+"cm");// in ra giá trị khoảng cách 
-    
+    if(digitalRead(ir_pin)== LOW){
+        digitalWrite(motor_pin1,LOW); 
+        digitalWrite(motor_pin2,HIGH);
+        analogWrite(ena,255);
+    }
+    else{
+         digitalWrite(motor_pin1,LOW);
+        digitalWrite(motor_pin2,HIGH);
+        analogWrite(ena,0);
+    }
+    if(millis() - duration > 400){
+        Serial.println(digitalRead(ir_pin));
+        Serial.println(analogRead(ir_pin));
+        Serial.println( "rt"+runtime);
+        duration = millis();
+    }
    
     
     
